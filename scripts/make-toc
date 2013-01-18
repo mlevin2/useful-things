@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+for file in $(ls *.jar 2>/dev/null)
+do
+  jar -tvf $file | tee $file.TOC
+done
+
+for file in $(ls *.tar.gz *.tgz 2>/dev/null)
+do
+  tar -ztvf $file | tee $file.TOC
+done
+
+for file in $(ls *.zip 2>/dev/null)
+do
+  unzip -l $file | tee $file.TOC
+done

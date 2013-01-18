@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+_IFS=$IFS
+IFS=$'\n'
+_cwd=$(pwd)
+
+git=$(find $HOME -name .git -type d)
+for gitdir in $git
+do
+	parent=$(dirname $gitdir)
+	echo "Updating $parent"
+	cd $parent
+	if [ -d "$gitdir/svn" ]
+	then
+		git svn fetch
+	else
+		git fetch
+	fi
+done
+
+svn=$(find $HOME -name .svn -type d)
+for svndir in $svn
+do
+	parent=$(dirname $svndir)
+	echo "Updating $parent"
+	cd $parent
+	svn update
+done
+
+IFS=$_IFS
+cd $_cwd
