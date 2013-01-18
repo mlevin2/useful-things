@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+# Creates Linux, Windows and Mac shortcuts for a given URL and title
+# ----------------------------------------------------------------------
+# I go back and forth between all 3 platforms and I keep shortcuts in my
+# dropbox, so when I find a link I want to save, I use this to create it
+# so that no matter what platform I'm on, I can click the shortcut.
+
+EXPECTED_ARGS=2
+E_BADARGS=5
+if [ $# -ne $EXPECTED_ARGS ]
+then
+  echo "Usage: `basename $0` [URL] [Shortcut Title]"
+  exit $E_BADARGS
+fi
+
+URL=$1
+TITLE=$2
+
+# Windows Shortcut
+cat >"$TITLE.URL" <<EOF
+[InternetShortcut]
+URL=$URL
+EOF
+
+# Linux Shortcut
+cat >"$TITLE.desktop" <<EOF
+#!/usr/bin/env xdg-open
+
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Icon[en_US]=gnome-panel-launcher
+Name[en_US]=$TITLE
+Exec=gnome-open "$URL"
+Name=$TITLE
+Icon=/usr/share/icons/Humanity/categories/64/applications-internet.svg
+EOF
+
+# Mac Shortcut
+cat >"$TITLE.webloc" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>URL</key>
+	<string>$URL</string>
+</dict>
+</plist>
+EOF
+
+chmod +x "$TITLE.desktop"
