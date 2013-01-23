@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# Watches process list for items matching the given string
+
+if [ "$#" == 0 ]
+then
+	PROG="$(basename $0)"
+	echo "Usage: $PROG <pattern>"
+	exit -1
+fi
+
+watch "ps -aef | grep '$1' | grep -v grep"
