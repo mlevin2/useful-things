@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# from http://crunchbang.org/forums/viewtopic.php?id=2848
+
+# prints the output of your command to a toast
+
+info=$(eval "$*" 2>/dev/null)
+notify-send -t $((1000+300*`echo -n $info | wc -w`)) -u low -i gtk-dialog-info "$*" "$info" || exit 2
