@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+# slows down an existing process to nice level 19 and ionice class 3
+
+sudo renice -n 19 $1
+sudo ionice -c3 -p$1
+

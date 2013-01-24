@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+# reformats a PDF to US Letter size
+# --------------------------------------------------------------------------------------
+# I often find that PDFs I download are not quite letter size (sometimes they're A4)
+# and if I don't do this, they don't print right (either they get cut off or the printer
+# yells at me to load a different paper size)
+#
+# Requires jpdftweak and java
+
+EXPECTED_ARGS=2
+E_BADARGS=5
+if [ $# -ne $EXPECTED_ARGS ]
+then
+  echo "Usage: `basename $0` [input file] [output file]"
+  exit $E_BADARGS
+fi
+INPUT=$1
+OUTPUT=$2
+if [ "$INPUT" = "$OUTPUT" ]
+then
+  TMP=`mktemp`
+  cp -p "$INPUT" $TMP
+  INPUT=$TMP
+fi
+java -Xmx256M -jar $HOME/jpdftweak/jpdftweak.jar "$INPUT" -scale 612.0,792.0 "$OUTPUT"
+if [ -e $TMP ]
+then
+  rm $TMP
+fi

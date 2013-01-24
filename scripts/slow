@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# makes something run really nicely
+# ---------------------------------------------------------------------------
+# Runs it a nice level 19 (the lowest priority), ionice class 3 (the nicest),
+# and with trickle (throttles network activity). Useful for running something
+# non-urgent that you don't want hogging resources
+#
+# Requires trickle
+
+FILE=`mktemp`
+echo "$@" >$FILE
+chmod +x $FILE
+nice -n 19 ionice -c3 trickle -u 5 -d 5 $FILE
+rm $FILE

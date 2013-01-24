@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# safely updates hosts file
+# ----------------------------------------------------------------------------------------
+# In the spirit of visudo, vipw and vigr, this script edits the hosts file, which
+# gets overwritten if you use the Cisco AnyConnect VPN client (it likes to overwrite
+# your hosts file without warning to its backup copy, clobbering any changes you've made).
+
+FILE=`mktemp`
+cp /etc/hosts $FILE && vi $FILE && sudo cp $FILE /etc/hosts && sudo cp $FILE /etc/hosts.ac && rm $FILE

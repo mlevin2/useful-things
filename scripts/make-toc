@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# creates TOC files for archives
+
 for file in $(ls *.jar 2>/dev/null)
 do
   jar -tvf $file | tee $file.TOC
@@ -13,4 +15,9 @@ done
 for file in $(ls *.zip 2>/dev/null)
 do
   unzip -l $file | tee $file.TOC
+done
+
+for file in $(ls *.rar 2>/dev/null)
+do
+  unrar l $file | tee $file.TOC
 done
