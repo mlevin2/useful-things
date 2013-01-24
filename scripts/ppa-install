@@ -14,5 +14,5 @@ fi
 PPA=$1
 PACKAGE=$2
 sudo add-apt-repository $PPA
-sudo apt-get update
-sudo apt-get install -y $PACKAGE
+sudo apt-fast update
+sudo apt-fast install -y $PACKAGE
