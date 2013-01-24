@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# from http://www.jamesmurty.com/2008/02/19/find-class-in-jar/
+
+if [ -z "$2" ]
+then
+  echo Usage: $0 Directory ClassName
+  exit 1
+fi
+
+IFS=$'\n'
+for f in $(find $1 -name '*.jar')
+do
+  jar tf $f | grep "$2" && echo "[in $f]"
+done
