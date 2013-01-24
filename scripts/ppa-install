@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+# adds a ppa and installs the desired package
+# ------------------------------------------------------------------------------------
+# when I find handy things on places like webupd8, I like to do an all-in-one command.
+
+EXPECTED_ARGS=2
+E_BADARGS=5
+if [ $# -ne $EXPECTED_ARGS ]
+then
+  echo "Usage: `basename $0` [ppa] [pagkage]"
+  exit $E_BADARGS
+fi
+PPA=$1
+PACKAGE=$2
+sudo add-apt-repository $PPA
+sudo apt-get update
+sudo apt-get install -y $PACKAGE
