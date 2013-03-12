@@ -6,5 +6,5 @@
 # gets overwritten if you use the Cisco AnyConnect VPN client (it likes to overwrite
 # your hosts file without warning to its backup copy, clobbering any changes you've made).
 
-FILE=`mktemp`
+FILE=`mktemp -t hostXXXXX`
 cp /etc/hosts $FILE && vi $FILE && sudo cp $FILE /etc/hosts && sudo cp $FILE /etc/hosts.ac && rm $FILE
