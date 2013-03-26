@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+EXPECTED_ARGS=1
+E_BADARGS=5
+if [ $# -ne $EXPECTED_ARGS ]
+then
+  echo "Usage: `basename $0` {directory to archive}"
+  exit $E_BADARGS
+fi
+name=$(basename "$1")
+rar a -r -rr -t -df "${name}.rar" "${name}"
