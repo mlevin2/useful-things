@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# reinstalls a brew keg as universal
+# ------------------------------------------------------------------------------------------
+# Sometimes I get the message that a keg needed to be installed with the --universal option.
+# This makes that easier.
+
+if [ $# -lt 1 ]
+then
+  echo "Usage: `basename $0` kegs"
+  exit -1
+fi
+for keg in "$@"
+do
+	brew uninstall $keg
+	brew install -vd $keg --universal
+done
