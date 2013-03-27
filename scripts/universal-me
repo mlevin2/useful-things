@@ -5,10 +5,12 @@
 # Sometimes I get the message that a keg needed to be installed with the --universal option.
 # This makes that easier.
 
-if [ $# -lt 1 ]
+MIN_ARGS=1
+E_BADARGS=5
+if [ $# -lt $MIN_ARGS ]
 then
   echo "Usage: `basename $0` kegs"
-  exit -1
+  exit $E_BADARGS
 fi
 for keg in "$@"
 do
