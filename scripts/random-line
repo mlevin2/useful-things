@@ -1,0 +1,5 @@
+#!/usr/bin/env perl
+# http://perldoc.perl.org/5.12.3/perlfaq5.html#How-do-I-select-a-random-line-from-a-file%3f
+srand;
+rand($.) < 1 && ($line = $_) while <>;
+print $line;
