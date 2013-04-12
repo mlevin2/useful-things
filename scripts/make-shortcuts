@@ -6,29 +6,61 @@
 # dropbox, so when I find a link I want to save, I use this to create it
 # so that no matter what platform I'm on, I can click the shortcut.
 
-EXPECTED_ARGS=2
+EXPECTED_ARGS=3
 E_BADARGS=5
 if [ $# -ne $EXPECTED_ARGS ]
 then
-  echo "Usage: `basename $0` [URL] [Shortcut Title]"
+  echo "Usage: `basename $0` -m|w|l|a [URL] [Shortcut Title]"
+  echo "  -m Mac"
+  echo "  -w Windows"
+  echo "  -l Linux"
+  echo "  -a ALL"
   exit $E_BADARGS
 fi
 
 URL=$1
 TITLE=$2
 
+MAC=0
+WIN=0
+LIN=0
+ALL=0
+
+while getopts mwla platform
+do
+  case $platform in
+    m)
+      MAC=1
+      ;;
+    w)
+      WIN=1
+      ;;
+    l)
+      LIN=1
+      ;;
+    a)
+      ALL=1
+      ;;
+  esac
+done
+
 # Windows Shortcut
+if [ $WIN -eq 1 -o $ALL -eq 1 ]
+then
 cat >"$TITLE.URL" <<EOF
 [InternetShortcut]
 URL=$URL
 EOF
+fi
 
 # Linux Shortcut
+if [ $LIN -eq 1 -o $ALL -eq 1 ]
+then
 cat >"$TITLE.desktop" <<EOF
 #!/usr/bin/env xdg-open
 
 [Desktop Entry]
-Version=1.0
+Version=true.0
 Type=Application
 Terminal=false
 Icon[en_US]=gnome-panel-launcher
@@ -37,8 +69,11 @@ Exec=gnome-open "$URL"
 Name=$TITLE
 Icon=/usr/share/icons/Humanity/categories/64/applications-internet.svg
 EOF
+fi
 
 # Mac Shortcut
+if [ $MAC -eq 1 -o $ALL -eq 1 ]
+then
 cat >"$TITLE.webloc" <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -49,5 +84,5 @@ cat >"$TITLE.webloc" <<EOF
 </dict>
 </plist>
 EOF
-
 chmod +x "$TITLE.desktop"
+fi
