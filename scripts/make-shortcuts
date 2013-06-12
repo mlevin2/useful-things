@@ -18,8 +18,8 @@ then
   exit $E_BADARGS
 fi
 
-URL=$1
-TITLE=$2
+URL=$2
+TITLE=$3
 
 MAC=0
 WIN=0
@@ -69,6 +69,7 @@ Exec=gnome-open "$URL"
 Name=$TITLE
 Icon=/usr/share/icons/Humanity/categories/64/applications-internet.svg
 EOF
+chmod +x "$TITLE.desktop"
 fi
 
 # Mac Shortcut
@@ -84,5 +85,4 @@ cat >"$TITLE.webloc" <<EOF
 </dict>
 </plist>
 EOF
-chmod +x "$TITLE.desktop"
 fi
