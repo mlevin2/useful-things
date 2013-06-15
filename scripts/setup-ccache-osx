@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+# Check for ccache
+command -v ccache >/dev/null 2>&1 || { echo >&2 "I'm afraid this script won't be of much use to you if you don't have ccache."; exit 1; }
+CCACHE=$(command -v ccache)
+
+PROGS="c++ cc clang clang++ g++ gcc i686-apple-darwin11-llvm-g++-4.2 i686-apple-darwin11-llvm-gcc-4.2 llvm-cpp-4.2 llvm-g++ llvm-g++-4.2 llvm-gcc llvm-gcc-4.2"
+
+if [ "$1" == "-u" ]
+then
+	echo "Uninstalling ccache links"
+	for PROG in $PROGS
+	do
+		PROG="/usr/local/bin/$PROG"
+		LOC=$(readlink $PROG)
+		if [ "$LOC" == "$CCACHE" ]
+		then
+			echo "Unlinking $PROG"
+			rm $PROG
+		else
+			echo "$PROG not linked to $CCACHE"
+		fi
+	done
+else
+	echo "Insalling ccache links"
+	for PROG in $PROGS
+	do
+		PROG="/usr/local/bin/$PROG"
+		if [ -e "$PROG" ]
+		then
+			echo "$PROG already exists; skipping"
+		else
+			echo "Linking $PROG to $CCACHE"
+			ln -s $CCACHE $PROG
+		fi
+	done
+fi
