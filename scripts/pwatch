@@ -9,4 +9,4 @@ then
 	exit -1
 fi
 
-watch "ps -aef | grep -i '$1' | egrep -v 'grep|$PROG'"
+watch "ps -aef | egrep -i '$1' | egrep -v 'grep|$PROG'"
