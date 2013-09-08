@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# Run curl pretending to be Chrome
+# -----------------------------------------------------
+
+EXE=curl
+
+command -v $EXE >/dev/null 2>&1 || { echo >&2 "I'm afraid this script won't be of much use to you if you don't have $EXE."; exit 1; }
+
+$EXE -H "Accept-Encoding: gzip,deflate,sdch" -H "Accept-Language: en-US,en;q=0.8" -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" -H "Cache-Control: max-age=0" -H "Connection: keep-alive" -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_8_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/30.0.1599.28 Safari/537.36" "$@"
