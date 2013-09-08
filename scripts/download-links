@@ -6,7 +6,9 @@
 # script out of it.
 
 EXE=aria2c
-STATS=.stats
+STATS=_stats.txt
+LOG=_log.txt
+LIMIT=0
 
 command -v $EXE >/dev/null 2>&1 || { echo >&2 "I'm afraid this script won't be of much use to you if you don't have $EXE."; exit 1; }
 
@@ -20,4 +22,4 @@ fi
 
 LINKS="$1"
 
-$EXE --input-file="$LINKS" --allow-overwrite=true --auto-file-renaming=false --conditional-get=true --max-concurrent-downloads=25 --max-connection-per-server=5 --remote-time=true --split=5 --http-accept-gzip=true --console-log-level=notice --file-allocation=none --human-readable=true --summary-interval=10 --uri-selector=adaptive --server-stat-if="$STATS" --server-stat-of="$STATS" --enable-http-pipelining=true --auto-save-interval=10 --disk-cache=1024M --seed-time=0
+$EXE --input-file="$LINKS" --allow-overwrite=true --auto-file-renaming=false --conditional-get=true --max-concurrent-downloads=25 --max-connection-per-server=5 --remote-time=true --split=5 --http-accept-gzip=true --console-log-level=notice --file-allocation=none --human-readable=true --summary-interval=10 --uri-selector=adaptive --server-stat-if="$STATS" --server-stat-of="$STATS" --enable-http-pipelining=true --auto-save-interval=10 --disk-cache=1024M --seed-time=0 --log=$LOG --max-overall-download-limit=$LIMIT
