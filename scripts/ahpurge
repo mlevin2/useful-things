@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# Purge an item from Acquia's Varnish cache
+# -----------------------------------------
+
+EXPECTED_ARGS=2
+E_BADARGS=5
+if [ $# -ne $EXPECTED_ARGS ]
+then
+  echo "Usage: `basename $0` [site name] [URL]"
+  exit $E_BADARGS
+fi
+
+EXE=curl
+
+command -v $EXE >/dev/null 2>&1 || { echo >&2 "I'm afraid this script won't be of much use to you if you don't have $EXE."; exit 1; }
+
+SITE="$1"
+URL="$2"
+
+$EXE -X PURGE -H "Accept-Encoding: gzip" -H "X-Acquia-Purge: $SITE" "$URL"
