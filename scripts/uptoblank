@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# Read only up to first blank line
+# --------------------------------
+# Inspired by http://stackoverflow.com/a/1603584/1509272
+
+while read line
+do
+	line=$(echo $line | sed 's/$//')
+	[ -z "$line" ] && break
+	printf "%s\n" "$line"
+done
