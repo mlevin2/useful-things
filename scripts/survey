@@ -1,0 +1,50 @@
+#!/usr/bin/env perl
+
+# Do a quick survey of the file types found in a directory tree
+
+use File::Find ();
+use File::Basename;
+
+use vars qw/*name *dir *prune/;
+*name   = *File::Find::name;
+*dir    = *File::Find::dir;
+*prune  = *File::Find::prune;
+
+my %extensions;
+
+sub wanted;
+sub record;
+
+my $numArgs = $#ARGV + 1;
+if ($numArgs != 1) {
+	print "Usage: $0 <directory>\n";
+	exit -1;
+}
+
+# Traverse desired filesystems
+File::Find::find({wanted => \&wanted}, "$ARGV[0]");
+
+# Report
+foreach my $key (sort(keys(%extensions))) {
+	print "$key\t$extensions{$key}\n";
+}
+
+exit;
+
+
+sub wanted {
+    my ($dev,$ino,$mode,$nlink,$uid,$gid);
+    (($dev,$ino,$mode,$nlink,$uid,$gid) = lstat($_)) && -f _ && record($name);
+}
+
+sub record {
+	my $name = shift;
+	my($filename, $directories, $suffix) = fileparse($name, qr/\.[^.]*/);
+	if ($suffix eq "") {
+		$suffix = "{none}";
+	}
+	if (!exists $extensions{$suffix}) {
+		$extensions{$suffix} = 0;
+	}
+	$extensions{$suffix}++;
+}
