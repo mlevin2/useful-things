@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# Create a pdf from a text file (useful for printing code)
+# --------------------------------------------------------
+
+EXPECTED_ARGS=2
+E_BADARGS=5
+if [ $# -ne $EXPECTED_ARGS ]
+then
+  echo "Usage: `basename $0` [input file] [output file]"
+  exit $E_BADARGS
+fi
+
+INPUT="$1"
+OUTPUT="$2"
+
+for reqcmd in enscript pstopdf
+do
+	command -v $reqcmd >/dev/null 2>&1 || { echo >&2 "I'm afraid this script won't be of much use to you if you don't have $reqcmd."; exit 1; }
+done
+
+enscript --verbose --font=Courier9 --line-numbers --output=- --word-wrap --media=Letter --portrait "$INPUT" | pstopdf -i -p -o "$OUTPUT"
