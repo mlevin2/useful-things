@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# Clean up extended attributes/acls from time machine
+# ---------------------------------------------------
+
+EXPECTED_ARGS=1
+E_BADARGS=5
+if [ $# -ne $EXPECTED_ARGS ]
+then
+  echo "Usage: `basename $0` [file or directory]"
+  exit $E_BADARGS
+fi
+
+INPUT="$1"
+
+sudo xattr -c -v -r "$INPUT"
+sudo chmod -R -v -a# 0 "$INPUT"
