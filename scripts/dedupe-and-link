@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+# dedupe files between two directories and replace with symlinks
+# -------------------------------------------------------------------------------
+# for any file found in the "non-authoritative" location that also exists in the
+# "authoritative" location, delete the non-authoritative copy and replace it with
+# a symlink to the authoritative copy
+
+EXPECTED_ARGS=2
+E_BADARGS=5
+if [ $# -ne $EXPECTED_ARGS ]
+then
+  echo "Usage: `basename $0` [authoritative directory] [non-authoritative directory]"
+  exit $E_BADARGS
+fi
+AUTHDIR=$(realpath $1)
+NONAUTHDIR=$(realpath $2)
+if [ ! -d "$AUTHDIR" -o ! -d "$NONAUTHDIR" ]
+then
+	echo "$AUTHDIR and $NONAUTHDIR must be directories"
+	exit $E_BADARGS
+fi
+if [ "$AUTHDIR" = "$NONAUTHDIR" ]
+then
+	echo "$AUTHDIR and $NONAUTHDIR must not be the same"
+	exit $E_BADARGS
+fi
+
+while IFS= read -r -d '' nonauthfile
+do
+	BAREFILE=$(basename "$nonauthfile")
+done < <(cd "$NONAUTHDIR" && find . -type f -print0 2>/dev/null)

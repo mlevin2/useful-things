@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+
+# Get rid of vmware-docker shortcuts
+# ----------------------------------
+
+EXPECTED_ARGS=3
+E_BADARGS=5
+if [ $# -ne $EXPECTED_ARGS ]
+then
+  echo "Usage: `basename $0` [VM name (regex, quoted if necessary)] [input location] [archive location]"
+  exit $E_BADARGS
+fi
+
+REGEX="$1"
+INPUT_LOCATION="$2"
+ARCHIVE_LOCATION="$3"
+
+# remove trailing slashes
+if [ "${#INPUT_LOCATION}" -gt "1" ]
+then
+	INPUT_LOCATION=${INPUT_LOCATION%/}
+fi
+if [ "${#ARCHIVE_LOCATION}" -gt "1" ]
+then
+	ARCHIVE_LOCATION=${ARCHIVE_LOCATION%/}
+fi
+
+# check for prerequisites
+for reqcmd in egrep zip
+do
+	command -v $reqcmd >/dev/null 2>&1 || { echo >&2 "I'm afraid this script won't be of much use to you if you don't have $reqcmd."; exit 1; }
+done
+
+# check for symlinks
+while [ -L "$ARCHIVE_LOCATION" ]
+do
+	# location is a symlink
+	ARCHIVE_LOCATION=$(readlink "$ARCHIVE_LOCATION")
+done
+
+# make sure location is a writeable directory
+if [ ! -d "$ARCHIVE_LOCATION" -o ! -w "$ARCHIVE_LOCATION" ]
+then
+	# not a writeable directory
+	echo "\"$ARCHIVE_LOCATION\" is not a writeable directory"
+	exit 1
+fi
+
+echo
+echo "Searching for shortcuts to VMs matching \"$REGEX\" in \"$INPUT_LOCATION\""
+echo "Will archive shortcuts to \"$ARCHIVE_LOCATION\""
+echo
+
+# go to starting location
+cd "$INPUT_LOCATION"
+
+# Based on example at https://stackoverflow.com/questions/8677546/bash-for-in-looping-on-null-delimited-string-variable
+while IFS= read -r -d '' match
+do
+	# strip ./ from beginning
+	match=${match#./}
+	# strip everything after first .app
+	app=$(expr "$match" : '\(.*\.app\)')
+	# check to see if VM name matches
+	egrep -q -i "$REGEX.*\.vmx" "$app/Contents/Info.plist" 2>/dev/null
+	if [ "$?" -eq "0" ]
+	then
+		# this VM matches
+		# get base name
+		appbase=${app%.app}
+		# message
+		echo "Archiving \"$app\" to \"$ARCHIVE_LOCATION/$appbase.zip\""
+		# create zip and remove original
+		sudo zip -q -r "$ARCHIVE_LOCATION/$appbase.zip" "$app" && sudo rm -rf "$app"
+ 	fi
+done < <(sudo find . -name vmware-docker -print0)
+
+exit 0
