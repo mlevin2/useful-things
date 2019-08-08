@@ -8,4 +8,4 @@ do
 	command -v $reqcmd >/dev/null 2>&1 || { echo >&2 "I'm afraid this script won't be of much use to you if you don't have $reqcmd."; exit 1; }
 done
 
-ccurl -ssi "$@" | dos2unix -q | uptoblank
+ccurl -si "$@" | dos2unix -q | uptoblank

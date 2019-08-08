@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# Create a new directory and unzip a zip file into it
+# ---------------------------------------------------
+
+EXPECTED_ARGS=1
+E_BADARGS=5
+if [ $# -ne $EXPECTED_ARGS ]
+then
+  echo "Usage: `basename $0` [zip file]"
+  exit $E_BADARGS
+fi
+
+ZIP="$1"
+
+for reqcmd in unzip
+do
+	command -v $reqcmd >/dev/null 2>&1 || { echo >&2 "I'm afraid this script won't be of much use to you if you don't have $reqcmd."; exit 1; }
+done
+
+BASE=$(basename "$1" .zip)
+mkdir "$BASE"
+cd "$BASE"
+unzip "../$ZIP"

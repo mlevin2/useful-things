@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+find . -d -name .DS_Store -type f -exec rm -rfv {} \;
+find . -d -name __MACOSX -type d -exec rm -rfv {} \;

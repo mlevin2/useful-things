@@ -1,0 +1,237 @@
+#!/usr/bin/env bash
+
+# Restore old volume adjustment sound
+# -----------------------------------
+
+APP=$(basename $0)
+WD=$(pwd)
+
+REVERT=0 # -r
+HELP=0 # -h
+
+while getopts ":hr" opt
+do
+	case $opt in
+		r)
+			REVERT=1
+			;;
+		h)
+			HELP=1
+			;;
+	esac
+done
+
+if [ $HELP -eq 1 ]; then
+	echo >&2 "Usage: $APP"
+	echo >&2 "       -r                         # revert to El Capitan sound"
+	echo >&2 "       -h                         # show this help summary"
+	exit -1
+fi
+
+cleanup() {
+	rm "$TMPFILE_YOSEMITE" 2>/dev/null
+	rm "$TMPFILE_ELCAPITAN" 2>/dev/null
+}
+
+failError() {
+	echo >&2 "$APP: $@"
+	cleanup
+	exit -1
+}
+
+failReq() {
+	for reqcmd in "$@"; do
+		command -v $reqcmd >/dev/null 2>&1 || { echo >&2 "I'm afraid this script won't be of much use to you if you don't have $reqcmd."; exit -1; }
+	done
+}
+
+failReq mktemp md5 base64
+
+TMPFILE_ELCAPITAN=$(mktemp -t elcapitan)
+TMPFILE_YOSEMITE=$(mktemp -t yosemite)
+
+MD5_ELCAPITAN="3363a8ead8269a281fcc798b3093c7d5"
+MD5_YOSEMITE="3a5a115c1dc49d72f04ece6436134265"
+
+DEST="/System/Library/LoginPlugins/BezelServices.loginPlugin/Contents/Resources/volume.aiff"
+
+main() {
+
+	# extract audio files
+
+	extract_file "yosemite" "$TMPFILE_YOSEMITE" "$MD5_YOSEMITE"
+	RV=$?
+	if [ $RV -ne 0 ]
+	then
+		failError "Unable to extract Yosemite sound to $TMPFILE_YOSEMITE"
+	fi
+	extract_file "elcapitan" "$TMPFILE_ELCAPITAN" "$MD5_ELCAPITAN"
+	RV=$?
+	if [ $RV -ne 0 ]
+	then
+		failError "Unable to extract El Capitan sound to $TMPFILE_YOSEMITE"
+	fi
+
+	# check current audio file
+
+	SRC="$TMPFILE_YOSEMITE"
+	MD5_SRC="$MD5_YOSEMITE"
+	if [ $REVERT -eq 1 ]
+	then
+		SRC="$TMPFILE_ELCAPITAN"
+		MD5_SRC="$MD5_ELCAPITAN"
+	fi
+
+	MD5_CURRENT=$(md5 -q "$DEST")
+	if [ "$MD5_CURRENT" = "$MD5_SRC" ]
+	then
+		echo "You are trying to replace the existing sound with the same sound. That doesn't seem productive."
+		exit 1
+	fi
+
+	# replace file
+	sudo cp "$SRC" "$DEST"
+
+	# cleanup
+
+}
+
+extract_file() {
+
+	if [ -z "$1" -o -z "$2" -o -z "$3" ]
+	then
+		return -1
+	fi
+
+	local FILE="$1"
+	local DEST="$2"
+	local MD5="$3"
+
+	if [ "$FILE" = "yosemite" ]
+	then
+		(base64 -D -b 80 | gzcat) >"$DEST" <<-EOF
+				H4sICE2I0FYAA3ZvbHVtZV95b3NlbWl0ZS5haWZmAO3XiXcU1Z7A8VvV1Z3u7IQQAhIIkMiiDEFHDag8
+				NhHEhCWIQXxIgCB7NAvIomwKE0UZUBQVFXDXYXn4FAZRFJ4+N5Sd4AJC2BMgZOlOp7vqvl8ic2bePzBz
+				zpzv557qrr5VfftudX+3Bw4dkaVcW7/uO3jgwP5Ds7KUUgnKUMbRSyq+T+x/DFBNsvqOGHLtilKu/pe8
+				WXmF0/ILU3uokqzCaUoZs8c/Mn1KUXFGxiHDdFluT4eOuWmz8guLphTMzE0rGD81f0Jx0ei0vMIJk6dI
+				9si04oJHpLCl696J8MYmtWx7X9rMkunTD/gio6JHpU2YnldU9EB2zr9c+95C9/qYheahOF98s4TmiS1y
+				HykomlIsBd83ZWL+zOKRM/Nm5Cc0VmqhFa8WunL/q2oHklu1vu6BP0prvCf3j9P8ojF9SyZOKfjjtg1t
+				Uv7nx9zsnKFNPypfbpc6Njsnq6Q4b/z0/L6FhXlz3mzXPuX+7Jym84fi47JzhuTPyZ/Y91qb9qeljyws
+				KCheaCivaqZaq46qm7pJ3aZ6qwFqsBqmxqg/q4dUnpqqitQc9YRaop5Sy1SpWqVeUhvUh2qb2qG+Vj+p
+				Q6pcnVNXDMOwDN8f3W8af7yr69U/MaLU4OyckXKWeIdSC4wF/3w5Jyd7gHJtPvXfOfqk3qe/1H/Vb+o1
+				+lk9T0/Vo/RAnam76VR9nW6lk3R3Of+TztCddKK2nIBT7dTqCH2jztYl+mW9UX+uN8t3Z+g5ulCv01v1
+				F/pv+mPJe1+/plfppXLXBH2/HqYH63vltbe+VSdLyen6Fvl8v75Pj9PT9ON6hV6k5+pJOlfuuUN+sY9c
+				nS7fXqBn68k6Rw+R3Jt1mu6oW0vN2um2+gbdU0/UpXqT/l7SHv2pHAf0d/qY3q+/1ed1lUpWmdLNk9Vs
+				VSCvw1Rnae83UtdHpS49dRfdXo6eerjUfJ3eJ4OUKilZ10sqk175Rr+nV8rd6/QWOVvX9P6F5DamLU15
+				KyXvPcnbLmmNpDk6T/eVMn3OSWe/c1L7pP/y9BS5r7GcLVLmeenyzqqPGiQpU94z5FPTL0p+vPz6IKln
+				gVogabacjZM6Z8j1Kv17U6q6dmejZLkyTibKNpkaR9Uu9YakbWqzTJefJCegtNHSyDaWGj+a3czVLsu1
+				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
+				/7iO/xv+ATPbwHvOsgMA
+		EOF
+	fi
+
+	if [ "$FILE" = "elcapitan" ]
+	then
+		(base64 -D -b 80 | gzcat) >"$DEST" <<-EOF
+			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
+			EOF
+	fi
+
+	TEMP_MD5=$(md5 -q "$DEST")
+	if [ "$MD5" != "$TEMP_MD5" ]
+	then
+		return -1
+	fi
+
+	return 0
+
+}
+
+main # run main function

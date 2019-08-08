@@ -3,7 +3,7 @@
 # check for prerequisites
 for reqcmd in exiftool qpdf pdftk uNoWatermark.py
 do
-	command -v $reqcmd >/dev/null 2>&1 || { echo >&2 "I'm afraid this script won't be of much use to you if you don't have $reqcmd."; exit 1; }
+	command -v ${reqcmd} >/dev/null 2>&1 || { echo >&2 "I'm afraid this script won't be of much use to you if you don't have $reqcmd."; exit 1; }
 done
 
 while IFS= read -r -d '' item
@@ -12,9 +12,9 @@ do
 	# get temporary filenames
 	base=$(basename "$item")
 	dir=$(dirname "$item")
-	uncompressed=$dir/$RANDOM-$base
-	unstripped=$dir/$RANDOM-$base
-	unlinearized=$dir/$RANDOM-$base
+	uncompressed=${dir}/$RANDOM-${base}
+	unstripped=${dir}/$RANDOM-${base}
+	unlinearized=${dir}/$RANDOM-${base}
 
 	# uncompress pdf
 	pdftk "$item" output "$uncompressed" uncompress

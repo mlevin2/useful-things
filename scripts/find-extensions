@@ -1,0 +1,28 @@
+#!/usr/bin/env perl
+
+use File::Find ();
+use File::Basename;
+
+use vars qw/*name *dir *prune/;
+*name   = *File::Find::name;
+*dir    = *File::Find::dir;
+*prune  = *File::Find::prune;
+
+sub wanted;
+
+my %extensions;
+
+File::Find::find({wanted => \&wanted}, '.');
+foreach $ext (sort(keys(%extensions))) {
+	print "$ext\n";
+}
+exit;
+
+sub wanted {
+	if (-f _) {
+	    ($name,$path,$suffix) = fileparse($_, qr/\.[^.]*/);
+	    if ($suffix ne "") {
+	    	$extensions{$suffix} = 1;
+	    }
+	}
+}

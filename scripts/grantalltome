@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+FILE_PERMS="append,chown,delete,execute,read,readattr,readextattr,readsecurity,write,writeattr,writeextattr,writesecurity"
+DIR_PERMS="add_file,add_subdirectory,chown,delete,delete_child,directory_inherit,file_inherit,list,readattr,readextattr,readsecurity,search,writeattr,writeextattr,writesecurity"
+
+if [ $# -eq 0 ]; then
+	echo "Usage: `basename $0` <files or directories>"
+	exit 1
+fi
+
+for reqcmd in gfind; do
+	command -v $reqcmd >/dev/null 2>&1 || { echo >&2 "I'm afraid this script won't be of much use to you if you don't have $reqcmd."; exit 1; }
+done
+
+
+for arg in "$@"; do
+
+	if [ -f "$arg" ]; then
+		sudo chmod -v +a "$USER allow $FILE_PERMS" "$arg"
+	elif [ -d "$arg" ]; then
+		gfind "$arg" -type f -exec sudo chmod -vv +a "$USER allow $FILE_PERMS" {} \;
+		gfind "$arg" -type d -exec sudo chmod -vv +a "$USER allow $DIR_PERMS" {} \;
+	fi
+
+done

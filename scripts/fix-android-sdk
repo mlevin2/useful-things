@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+# Keep android-sdk symlink up to date
+# -----------------------------------
+
+EXPECTED_ARGS=0
+E_BADARGS=5
+if [ $# -ne $EXPECTED_ARGS ]
+then
+  echo >&2 "Usage: `basename $0`"
+  exit $E_BADARGS
+fi
+
+for reqcmd in grealpath gsort gfind
+do
+	command -v $reqcmd >/dev/null 2>&1 || { echo >&2 "I'm afraid this script won't be of much use to you if you don't have $reqcmd."; exit 1; }
+done
+
+LATEST=$(gfind /usr/local/Cellar/android-sdk -mindepth 1 -maxdepth 1 -type d | gsort -V | tail -1)
+if [ -z "$LATEST" ]; then
+	echo >&2 "I couldn't find the latest version of the SDK."
+	exit -1
+fi
+CURRENT=$(grealpath /opt/android-sdk)
+if [ -z "$CURRENT" ]; then
+	echo >&2 "I couldn't find the current version of the SDK."
+	exit -1
+fi
+if [ ! -L /opt/android-sdk ]; then
+	echo >&2 "The current version doesn't seem to be a symlink."
+	exit -1
+fi
+if [ "$LATEST" = "$CURRENT" ]; then
+	echo >&2 "Nothing needs to be updated."
+	exit 0
+else
+	echo >&2 "Updating the symlink."
+	sudo unlink /opt/android-sdk
+	sudo ln -s "$LATEST" /opt/android-sdk
+	exit 0
+fi

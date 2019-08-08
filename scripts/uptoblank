@@ -4,9 +4,12 @@
 # --------------------------------
 # Inspired by http://stackoverflow.com/a/1603584/1509272
 
-while read line
-do
-	line=$(echo $line | sed 's/$//')
-	[ -z "$line" ] && break
-	printf "%s\n" "$line"
-done
+#while read line
+#do
+#	line=$(echo $line | sed 's/$//')
+#	[ -z "$line" ] && break
+#	printf "%s\n" "$line"
+#done
+
+#awk -v 'RS=\n\n' '1;{exit}'
+awk '!NF{exit}1'

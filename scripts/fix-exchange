@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+security delete-generic-password -G MSOpenTech.ADAL.1
+security delete-internet-password -s msoCredentialSchemeADAL
