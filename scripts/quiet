@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+vol="$1"
+
+if [[ "$vol" =~ ^[1-9]$ ]] && [ $vol -gt 0 ] && [ $vol -le 9 ]
+then
+  newvol="0.00${vol}"
+  message="Setting volume to ${newvol}"
+  osascript -e "set volume 0.00${vol}"
+  osascript -e "display notification \"${message}\" with title \"Quiet\""
+  echo $message
+else
+  echo "Usage: $(basename $0) [1-9]"
+fi
