@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+[ $# -eq 7 ] && meld "$2" "$5"

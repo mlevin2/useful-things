@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+curl -s 'https://randomuser.me/api/?format=json&nat=us' -o - | jq .

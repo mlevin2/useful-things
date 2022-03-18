@@ -3,9 +3,11 @@
 # Run curl pretending to be Chrome, but get only headers
 # ------------------------------------------------------
 
-for reqcmd in ccurl dos2unix uptoblank 
+for reqcmd in ccurl dos2unix ghead uptoblank
 do
 	command -v $reqcmd >/dev/null 2>&1 || { echo >&2 "I'm afraid this script won't be of much use to you if you don't have $reqcmd."; exit 1; }
 done
 
-ccurl -si "$@" | dos2unix -q | uptoblank
+#ccurl -si "$@" | dos2unix -q | uptoblank
+
+ccurl -si --styled-output -r 0-1 "$@" | egrep -vi '^content-(length|range):' | ghead -n -2

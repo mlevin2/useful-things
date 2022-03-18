@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+lnp.pl $1
+cnam.pl $1
